@@ -68,6 +68,7 @@ class BeamSearch(object):
 
 
     def beam_search(self, batch):
+
         # batch should have only one example
         enc_batch, enc_padding_mask, enc_lens, enc_batch_extend_vocab, extra_zeros, c_t_0, coverage_t_0 = \
             get_input_from_batch(batch, use_cuda)
@@ -105,6 +106,7 @@ class BeamSearch(object):
                 all_state_h.append(state_h)
                 all_state_c.append(state_c)
                 all_context.append(h.context)
+
 
             s_t_1 = (torch.stack(all_state_h, 0).unsqueeze(0), torch.stack(all_state_c, 0).unsqueeze(0))
             c_t_1 = torch.stack(all_context, 0)
@@ -160,8 +162,8 @@ class BeamSearch(object):
 
         beams_sorted = self.sort_beams(results)
         return beams_sorted[0]
-    
-    
+
+
     def decode(self):
         start = time.time()
         counter = 0
@@ -170,7 +172,8 @@ class BeamSearch(object):
         while batch is not None:
             # Run beam search to get best Hypothesis
             best_summary = self.beam_search(batch)
-
+            import pdb;
+            pdb.set_trace()
             # Extract the output ids from the hypothesis and convert back to words
             output_ids = [int(t) for t in best_summary.tokens[1:]]
             decoded_words = data.outputids2words(output_ids, self.vocab,
@@ -196,15 +199,14 @@ class BeamSearch(object):
                 start = time.time()
 
             batch = self.batcher.next_batch()
-        
+
         print('Average BLEU score:', np.mean(bleu_scores))
-        '''
+
         # uncomment this if you successfully install `pyrouge`
         print("Decoder has finished reading dataset for single_pass.")
         print("Now starting ROUGE eval...")
         results_dict = rouge_eval(self._rouge_ref_dir, self._rouge_dec_dir)
         rouge_log(results_dict, self._decode_dir)
-        '''
 
 
 if __name__ == '__main__':

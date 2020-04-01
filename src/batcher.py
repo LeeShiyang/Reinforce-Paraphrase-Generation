@@ -23,12 +23,12 @@ class Example(object):
       article_words = article_words[:config.max_enc_steps]
     self.enc_len = len(article_words) # store the length after truncation but before padding
     self.enc_input = [vocab.word2id(w) for w in article_words] # list of word ids; OOVs are represented by the id for UNK token
-    
+
     # Process the abstract
     abstract = ' '.join(abstract_sentences)
     abstract_words = abstract.split() # list of strings
     abs_ids = [vocab.word2id(w) for w in abstract_words] # list of word ids; OOVs are represented by the id for UNK token
-    
+
     # Get the decoder input sequence and target sequence
     self.dec_input, self.target = self.get_dec_inp_targ_seqs(abs_ids, config.max_dec_steps, start_decoding, stop_decoding)
     self.dec_len = len(self.dec_input)
@@ -49,7 +49,7 @@ class Example(object):
     self.original_article = article
     self.original_abstract = abstract
     self.original_abstract_sents = abstract_sentences
-    
+
 
   def get_dec_inp_targ_seqs(self, sequence, max_len, start_id, stop_id):
     inp = [start_id] + sequence[:]
@@ -272,9 +272,9 @@ class Batcher(object):
   def text_generator(self, example_generator):
     while True:
       try:
-        e = next(example_generator) # e is a tf.Example
-        article_text = e.features.feature['article'].bytes_list.value[0].decode() # the article text was saved under the key 'article' in the data files
-        abstract_text = e.features.feature['abstract'].bytes_list.value[0].decode() # the abstract text was saved under the key 'abstract' in the data files
+        pair = next(example_generator)
+        article_text = pair[0] # the article text was saved under the key 'article' in the data files
+        abstract_text = pair[1] # the abstract text was saved under the key 'abstract' in the data files
       except ValueError:
 #        tf.logging.error('Failed to get article or abstract from example')
         continue

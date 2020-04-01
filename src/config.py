@@ -1,16 +1,16 @@
 import os
 
 root_dir = os.path.expanduser("~")
-root_dir = os.path.join(root_dir, "Desktop")
+root_dir = os.path.join(root_dir, "emnlp2020")
 
 print_interval = 100
 save_model_iter = 1000
 
-train_data_path = os.path.join(root_dir, "Reinforce-Paraphrase-Generation/data/twitter_url/chunked/train_*")
-eval_data_path = os.path.join(root_dir, "Reinforce-Paraphrase-Generation/data/twitter_url/chunked/val_*")
-decode_data_path = os.path.join(root_dir, "Reinforce-Paraphrase-Generation/data/twitter_url/chunked/test_*")
-vocab_path = os.path.join(root_dir, "Reinforce-Paraphrase-Generation/data/twitter_url/vocab")
-log_root = os.path.join(root_dir, "Reinforce-Paraphrase-Generation/log_twitter")
+train_data_path = os.path.join(root_dir, "/home/shiyang/emnlp2020/data/para-nmt-5m-processed/train.txt")
+eval_data_path = os.path.join(root_dir, "/home/shiyang/emnlp2020/data/para-nmt-5m-processed/valid.txt")
+decode_data_path = os.path.join(root_dir, "/home/shiyang/emnlp2020/data/para-nmt-5m-processed/test.txt")
+vocab_path = os.path.join(root_dir, "/home/shiyang/emnlp2020/data/para-nmt-5m-processed/vocab.txt")
+log_root = os.path.join(root_dir, "Reinforce-Paraphrase-Generation/log_Para5M_vocab")
 
 # Hyperparameters
 mode = "MLE"   # other options: RL/GTI/SO/SIO/DAGGER/DAGGER*
@@ -18,17 +18,16 @@ alpha = 1.0
 beta = 1.0
 k1 = 0.9999
 k2 = 3000.
-hidden_dim= 256
-emb_dim= 128
-batch_size= 8
+hidden_dim= 512
+emb_dim= 256
+batch_size=500
 sample_size= 4
-max_enc_steps= 20
-max_dec_steps= 20
+max_enc_steps= 30
+max_dec_steps= 30
 beam_size= 8
 min_dec_steps= 5
-vocab_size= 5000
-
-max_iterations = 5000000
+vocab_size= 15000
+max_iterations = 50000
 lr = 1e-5
 pointer_gen = True
 is_coverage = False

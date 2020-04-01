@@ -30,7 +30,7 @@ def get_input_from_batch(batch, use_cuda):
         enc_batch = enc_batch.cuda()
         enc_padding_mask = enc_padding_mask.cuda()
         c_t_1 = c_t_1.cuda()
-        
+
     if enc_batch_extend_vocab is not None:
         enc_batch_extend_vocab = enc_batch_extend_vocab.cuda()
     if extra_zeros is not None:
@@ -58,6 +58,7 @@ def get_output_from_batch(batch, use_cuda):
 
 
 def compute_reward(batch, decode_batch, vocab, mode, use_cuda):
+    
     target_sents = batch.original_abstracts  # list of string
     decode_batch = decode_batch.cpu().numpy()  # B x S x L
     output_ids = decode_batch[:, :, 1:]
@@ -76,7 +77,7 @@ def compute_reward(batch, decode_batch, vocab, mode, use_cuda):
             decode_sent = ' '.join(words)
             all_rewards[i, j] = rouge_2(target_sents[i], decode_sent)
     batch_avg_reward = torch.mean(all_rewards, dim=1, keepdim=True)  # B x 1
-    
+
     ones = torch.ones((config.batch_size, config.sample_size))
     if use_cuda: ones = ones.cuda()
     if mode == 'MLE':
@@ -87,7 +88,7 @@ def compute_reward(batch, decode_batch, vocab, mode, use_cuda):
             all_rewards = all_rewards
         else:
             all_rewards = all_rewards - batch_avg_reward
-        
+
         for i in range(config.batch_size):
             for j in range(config.sample_size):
                 if all_rewards[i,j] < 0:

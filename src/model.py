@@ -42,7 +42,7 @@ class Encoder(nn.Module):
         super(Encoder, self).__init__()
         self.embedding = nn.Embedding(config.vocab_size, config.emb_dim)
         init_wt_normal(self.embedding.weight)
-        self.lstm = nn.LSTM(config.emb_dim, config.hidden_dim, num_layers=1, 
+        self.lstm = nn.LSTM(config.emb_dim, config.hidden_dim, num_layers=1,
                             batch_first=True, bidirectional=True)
         init_lstm_wt(self.lstm)
         self.W_h = nn.Linear(config.hidden_dim * 2, config.hidden_dim * 2, bias=False)
@@ -99,7 +99,7 @@ class Attention(nn.Module):
         e = torch.tanh(att_features) # BL x 2H
         scores = self.v(e)  # BL x 1
         scores = scores.view(-1, t_k)  # B x L
-        
+
         # NOTE: Here may lead to NAN problem!!!
         attn_dist_ = F.softmax(scores, dim=1) * enc_padding_mask # B x L
         normalization_factor = attn_dist_.sum(1, keepdim=True)
@@ -124,10 +124,10 @@ class Decoder(nn.Module):
         self.embedding = nn.Embedding(config.vocab_size, config.emb_dim)
         init_wt_normal(self.embedding.weight)
         self.x_context = nn.Linear(config.hidden_dim * 2 + config.emb_dim, config.emb_dim)
-        self.lstm = nn.LSTM(config.emb_dim, config.hidden_dim, num_layers=1, 
+        self.lstm = nn.LSTM(config.emb_dim, config.hidden_dim, num_layers=1,
                             batch_first=True, bidirectional=False)
         init_lstm_wt(self.lstm)
-        
+
         if config.pointer_gen:
             self.p_gen_linear = nn.Linear(config.hidden_dim * 4 + config.emb_dim, 1)
 
@@ -138,6 +138,9 @@ class Decoder(nn.Module):
 
     def forward(self, y_t_1, s_t_1, encoder_outputs, encoder_feature, enc_padding_mask,
                 c_t_1, extra_zeros, enc_batch_extend_vocab, coverage, step):
+
+        # import pdb;
+        # pdb.set_trace()
         if not self.training and step == 0:
             h_decoder, c_decoder = s_t_1
             s_t_hat = torch.cat((h_decoder.view(-1, config.hidden_dim),
@@ -188,7 +191,7 @@ class Model(object):
         reduce_state = ReduceState()
         # shared the embedding between encoder and decoder
         decoder.embedding.weight = encoder.embedding.weight
-        
+
         if is_eval:
             self.encoder = encoder.eval()
             self.decoder = decoder.eval()

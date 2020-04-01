@@ -70,25 +70,36 @@ class Vocab(object):
         writer.writerow({"word": self._id_to_word[i]})
 
 
+# def example_generator(data_path, single_pass):
+#   while True:
+#     filelist = glob.glob(data_path) # get the list of datafiles
+#     assert filelist, ('Error: Empty filelist at %s' % data_path) # check filelist isn't empty
+#     if single_pass:
+#       filelist = sorted(filelist)
+#     else:
+#       random.shuffle(filelist)
+#     for f in filelist:
+#       reader = open(f, 'rb')
+#       while True:
+#         len_bytes = reader.read(8)
+#         if not len_bytes: break # finished reading this file
+#         str_len = struct.unpack('q', len_bytes)[0]
+#         example_str = struct.unpack('%ds' % str_len, reader.read(str_len))[0]
+#         yield example_pb2.Example.FromString(example_str)
+#     if single_pass:
+#       #print("example_generator completed reading all datafiles. No more data.")
+#       break
+
 def example_generator(data_path, single_pass):
   while True:
-    filelist = glob.glob(data_path) # get the list of datafiles
-    assert filelist, ('Error: Empty filelist at %s' % data_path) # check filelist isn't empty
-    if single_pass:
-      filelist = sorted(filelist)
-    else:
-      random.shuffle(filelist)
-    for f in filelist:
-      reader = open(f, 'rb')
+      reader = open(data_path)
       while True:
-        len_bytes = reader.read(8)
-        if not len_bytes: break # finished reading this file
-        str_len = struct.unpack('q', len_bytes)[0]
-        example_str = struct.unpack('%ds' % str_len, reader.read(str_len))[0]
-        yield example_pb2.Example.FromString(example_str)
-    if single_pass:
+        line = reader.readline()
+        if not line: break # finished reading this file
+        yield line.strip().split("\t")
+      if single_pass:
       #print("example_generator completed reading all datafiles. No more data.")
-      break
+        break
 
 
 def article2ids(article_words, vocab):
